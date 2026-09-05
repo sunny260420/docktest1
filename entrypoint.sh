@@ -6,8 +6,13 @@ sleep 2
 
 # 2. 设置图形环境变量，并在虚拟显示器中拉起 gedit
 export DISPLAY=:1
+openbox-session &
+sleep 1
+
+# 激活剪贴板桥梁
+autocutsel -s CLIPBOARD -fork
+autocutsel -s PRIMARY -fork
 terminator &
-firefox &
 sleep 1
 
 # 3. 启动免密的 VNC 桌面服务端
