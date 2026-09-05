@@ -13,7 +13,9 @@ export GTK_IM_MODULE="fcitx"
 export QT_IM_MODULE="fcitx"
 openbox-session &
 sleep 1
-
+# 4. 【强行拉起桌面图标绘制引擎】
+# --desktop 参数会接管壁纸和 root/Desktop 目录下的图标渲染
+pcmanfm --desktop & \
 # 激活剪贴板桥梁
 autocutsel -s CLIPBOARD -fork && \
 autocutsel -s PRIMARY -fork && \
@@ -30,4 +32,4 @@ sleep 1
 
 # 4. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
-exec python3 -m websockify --web /opt/novnc --auth-plugin=ServerTokenApi --auth-source="vnc:demo2026" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
+exec python3 -m websockify --web /opt/novnc --web-args="show_clip=true" --auth-plugin=ServerTokenApi --auth-source="vnc:demo2026" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
