@@ -1,26 +1,31 @@
-FROM python:3.13-alpine
+FROM alpine:latest
 
-ENV PORT=3000
-ENV AUTO_ACCESS=true
-WORKDIR /app
+# 1. 安装基础工具、gedit、xvfb、x11vnc、python3、git 以及字体
+RUN apk add --no-cache \
+    bash \
+    gedit \
+    xvfb \
+    x11vnc \
+    python3 \
+    py3-pip \
+    git \
+    ttf-dejavu
 
-COPY . .
+# 2. 安全字符串拼接：直接拼出完整的官方库地址，100% 避免被截断
+RUN PART1="https://github.com" && \
+    PART2="/novnc/noVNC.git" && \
+    git clone "${PART1}${PART2}" /opt/novnc
 
-EXPOSE 8080 3000 22
+# 3. 安装 websockify
+RUN pip3 install --no-cache-dir websockify --break-system-packages
 
-RUN apk update && apk --no-cache add openssl openssh bash gedit curl tmux nano htop iproute2 gcompat xvfb x11vnc ttf-dejavu &&\
-    ssh-keygen -A && \
-    sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    echo "root:passw0rd" | chpasswd && \
-    chmod +x app.py &&\
-    pip install -r requirements.txt
-RUN apk add --no-cache --repository=http://alpinelinux.org novnc    
-#CMD ["/bin/sh", "-c", "/usr/sbin/sshd && echo 'Starting...' && AUTO_ACCESS=true PORT=3000 python3 app.py "]
+# 4. 暴露 Railway 的网页端口
+EXPOSE 8080
 
+# 5. 启动脚本
 CMD Xvfb :1 -screen 0 1280x1024x24 & \
     sleep 2 && \
     export DISPLAY=:1 && \
     gedit & \
     x11vnc -forever -shared -display :1 -nopw -listen localhost -xkb & \
-    /usr/share/novnc/utils/launch.sh --listen 8080 --vnc localhost:5900
+    python3 -m websockify --web /opt/novnc 8080 localhost:5900
