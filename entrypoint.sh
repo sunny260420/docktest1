@@ -20,10 +20,10 @@ openbox-session &
 sleep 1
 # 5. 【强行拉起桌面图标绘制引擎】
 # --desktop 参数会接管壁纸和 root/Desktop 目录下的图标渲染
-pcmanfm --desktop & \
+pcmanfm --desktop & 
 # 6. 激活剪贴板桥梁
-autocutsel -s CLIPBOARD -fork && \
-autocutsel -s PRIMARY -fork && \
+autocutsel -s CLIPBOARD -fork &
+autocutsel -s PRIMARY -fork &
 # 7. 【核心常驻：在后台默默拉起 fcitx5 输入法进程】
 # -d 表示以守护进程常驻后台，确保它比应用先启动
 terminator &
