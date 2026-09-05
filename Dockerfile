@@ -24,7 +24,7 @@ RUN pip3 install --no-cache-dir websockify --break-system-packages
 
 # 4. 复制为默认首页
 RUN cp /opt/novnc/vnc.html /opt/novnc/index.html
-EXPOSE 8080
+# EXPOSE 8080
 # 5. 将启动脚本复制进容器，并赋予绝对的可执行权限
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
