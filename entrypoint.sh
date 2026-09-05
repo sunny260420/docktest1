@@ -10,8 +10,8 @@ openbox-session &
 sleep 1
 
 # 激活剪贴板桥梁
-autocutsel -s CLIPBOARD -fork
-autocutsel -s PRIMARY -fork
+#autocutsel -s CLIPBOARD -fork
+#autocutsel -s PRIMARY -fork
 terminator &
 sleep 1
 
