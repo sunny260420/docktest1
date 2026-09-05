@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 # 1. 安装基础工具、gedit、xvfb、x11vnc、python3、git 以及字体
-RUN apk add --no-cache openssl openssh bash gedit curl tmux nano htop iproute2 gcompat \
+RUN apk add --no-cache openssl openssh bash gedit mousepad curl tmux nano htop iproute2 gcompat \
     terminator \
     firefox \
     xvfb \
