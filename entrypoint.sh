@@ -15,7 +15,7 @@ export QT_IM_MODULE="fcitx"
 # 用 sed 把 Exec=firefox 改为 Exec=firefox --no-sandbox，保证双击桌面图标时 100% 成功弹窗
 if [ -f /root/Desktop/firefox.desktop ]; then
     sed -i 's/Exec=firefox/Exec=firefox --no-sandbox/g' /root/Desktop/firefox.desktop
-fi && \
+fi
 openbox-session &
 sleep 1
 # 5. 【强行拉起桌面图标绘制引擎】
@@ -38,4 +38,4 @@ sleep 1
 
 # 10. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
-exec python3 -m websockify --web /opt/novnc --web-args="show_clip=true" --auth-plugin=ServerTokenApi --auth-source="vnc:demo2026" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
+exec python3 -m websockify --web /opt/novnc --auth-plugin=ServerTokenApi --auth-source="vnc:demo2026" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
