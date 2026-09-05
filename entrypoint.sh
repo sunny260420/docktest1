@@ -2,21 +2,25 @@
 # 0. 【核心新增：解决输入法闪退与剪贴板 ?? 乱码】
 # 1) 创建并显式指定 XDG 运行时目录，给 Fcitx5 搭建好通信总线
 mkdir -p /run/user/0
-# export XDG_RUNTIME_DIR=/run/user/0
+
 chmod 700 /run/user/0
 
-# 2) 强行覆盖全局系统语言环境为中文 UTF-8，彻底打通 GTK3 应用对中文的编解码
-#export LANG=zh_CN.UTF-8
-#export LC_ALL=zh_CN.UTF-8
+
 
 # 1. 启动虚拟显示器 (:1) 并给它一点初始化时间
-Xvfb :1 -screen 0 1280x1024x24 &
+Xvfb :1 -screen 0 1280x720x24 &
 sleep 2
 
 # 2. 设置图形环境变量，并在虚拟显示器中拉起 gedit
 export DISPLAY=:1
+# . 【终极闭环核心：在后台拉起系统级 DBus 守护总线】
+# 这一步会创建 /var/run/dbus/system_bus_socket，彻底让 fcitx5、chromium 和系统剪贴板相互打通！
+mkdir -p /var/run/dbus
+dbus-uuidgen --ensure
+dbus-daemon --system --fork
 # 【核心修复 2/2：启动 DBus 会话总线】
 # 这一步会将 DBUS_SESSION_BUS_ADDRESS 注入环境，打通 fcitx5 与 mousepad 的底层桥梁
+
 eval $(dbus-launch --sh-syntax)
 
 # 3. 【核心闭环：显式注入中文输入法全局环境变量】
@@ -29,6 +33,12 @@ eval $(dbus-launch --sh-syntax)
 if [ -f /root/Desktop/firefox.desktop ]; then
     sed -i 's/Exec=firefox/Exec=firefox --no-sandbox/g' /root/Desktop/firefox.desktop
 fi
+# 5. 修改桌面的 Chromium 快捷参数绕过容器内核沙箱限制
+# 用 sed 强制让桌面的双击图标带上 --no-sandbox、--disable-gpu 参数启动，确保 100% 成功秒开窗
+if [ -f /root/Desktop/chromium.desktop ]; then
+    sed -i 's/Exec=chromium-browser/Exec=chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage --single-process --headless --disable-software-rasterizer/g' /root/Desktop/chromium.desktop
+fi
+
 openbox-session &
 sleep 1
 # 5. 【强行拉起桌面图标绘制引擎】
