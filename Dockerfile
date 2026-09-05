@@ -9,7 +9,10 @@ RUN apk add --no-cache openssl openssh bash gedit curl tmux nano htop iproute2 g
     python3 \
     py3-pip \
     git \
-    ttf-dejavu
+    ttf-dejavu \
+    autocutsel \
+    openbox \
+    py3-xdg
 
 # 2. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
