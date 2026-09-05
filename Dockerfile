@@ -24,7 +24,8 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     pcmanfm \
     adwaita-icon-theme \
     musl-locales \
-    dbus
+    dbus \
+    gnu-libiconv
 
 # 2. 【核心修复 1/2】用最高级别的系统 ENV 锁死全通用 UTF-8 环境与输入法路径
 # 这样能从容器诞生的第一秒，强制内核采用 C.UTF-8 编解码，彻底杜绝剪贴板降级变成 ??
