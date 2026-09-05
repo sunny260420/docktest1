@@ -13,7 +13,11 @@ RUN apk add --no-cache openssl openssh bash gedit mousepad curl tmux nano htop i
     autocutsel \
     openbox \
     py3-xdg \
-    bubblewrap
+    bubblewrap \
+    font-noto-cjk \
+    fcitx5 \
+    fcitx5-gtk3 \
+    fcitx5-chinese-addons
 
 # 2. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
