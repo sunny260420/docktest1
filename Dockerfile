@@ -5,6 +5,7 @@ RUN apk add --no-cache openssl openssh curl tmux nano htop iproute2 gcompat \
     bash \
     gedit \
     firefox \
+    terminator \
     xvfb \
     x11vnc \
     python3 \
@@ -13,16 +14,23 @@ RUN apk add --no-cache openssl openssh curl tmux nano htop iproute2 gcompat \
     ttf-dejavu \
     nginx
 
-# 2. 安全字符串拼接：直接克隆官方完整的 noVNC 源码到临时目录
+# 2. 克隆官方完整的 noVNC 源码到指定目录
 RUN PART1="https://github.com" && \
     PART2="/novnc/noVNC.git" && \
     git clone "${PART1}${PART2}" /opt/novnc
 
-# 3. 安装 websockify 核心组件
+# 3. 【核心闭环补丁 1/2】直接用 sed 强行修改 noVNC 的前端源码（ui.js）
+# 强制 noVNC 无论是通过 HTTP 还是 HTTPS 访问，在点击连接时：
+# 1) 必须强行使用安全加密的 WebSokcet (wss://) 协议，防止被浏览器拦截
+# 2) 必须强行将 WebSocket 路径写死为 "/websockify"，绝不允许它生成乱七八糟的参数
+RUN sed -i 's/var encrypt = .*/var encrypt = true;/g' /opt/novnc/app/ui.js && \
+    sed -i 's/var path = .*/var path = "websockify";/g' /opt/novnc/app/ui.js
+
+# 4. 安装 websockify 核心组件
 RUN pip3 install --no-cache-dir websockify --break-system-packages
 
-# 4. 【核心闭环】用一行复杂的 echo 直接在容器内动态生成完美的 Nginx 配置文件
-# 该配置统一监听 8080，静态网页直接走 noVNC，WebSocket 流量通过 /websockify 路径完美透传 Upgrade 协议头
+# 5. 【核心闭环补丁 2/2】最纯净的 Nginx 配置，只干一件事：
+# 收到域名根目录访问就吐出网页，收到外部 "/websockify" 的 wss:// 流量，就无缝透传给内部 5901 端口
 RUN echo 'events { worker_connections 1024; } \
 http { \
     include /etc/nginx/mime.types; \
@@ -42,14 +50,11 @@ http { \
     } \
 }' > /etc/nginx/nginx.conf
 
-# 5. 确保 Nginx 的运行目录存在
+# 6. 确保 Nginx 的运行目录并暴露 Railway 端口
 RUN mkdir -p /run/nginx
+EXPOSE 8080
 
-# 6. 暴露 Railway 的网页端口
-EXPOSE 8080 22
-
-# 7. 最终启动脚本：
-# 启动 Nginx (8080端口) -> 启动虚拟屏幕 -> 运行 gedit -> 运行 vnc -> 使用 websockify 监听内部 5901 端口
+# 7. 最终启动脚本
 CMD nginx & \
     Xvfb :1 -screen 0 1280x1024x24 & \
     sleep 2 && \
@@ -57,5 +62,6 @@ CMD nginx & \
     gedit & \
     x11vnc -forever -shared -display :1 -nopw -listen 127.0.0.1 -xkb & \
     python3 -m websockify 5901 127.0.0.1:5900
+
 
 
