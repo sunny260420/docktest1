@@ -1,9 +1,10 @@
 FROM alpine:latest
 
 # 1. 安装基础工具、gedit、xvfb、x11vnc、python3、git 以及字体
-RUN apk add --no-cache openssl openssh bash gedit curl tmux nano htop iproute2 gcompat \
+RUN apk add --no-cache openssl openssh curl tmux nano htop iproute2 gcompat \
     bash \
     gedit \
+    terminator \
     xvfb \
     x11vnc \
     python3 \
@@ -14,7 +15,7 @@ RUN apk add --no-cache openssl openssh bash gedit curl tmux nano htop iproute2 g
     sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
     echo "root:passw0rd" | chpasswd && \
-    chmod +x app.py &&\
+
     pip install -r requirements.txt
 
 # 2. 安全字符串拼接：直接拼出完整的官方库地址，100% 避免被截断
