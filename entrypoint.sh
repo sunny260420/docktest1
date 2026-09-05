@@ -35,11 +35,14 @@ if [ -f /root/Desktop/firefox.desktop ]; then
 fi
 # 5. 修改桌面的 Chromium 快捷参数绕过容器内核沙箱限制
 # 用 sed 强制让桌面的双击图标带上 --no-sandbox、--disable-gpu 参数启动，确保 100% 成功秒开窗
+# --single-process --disable-software-rasterizer 先不加
 if [ -f /root/Desktop/chromium.desktop ]; then
-    sed -i 's/Exec=chromium-browser/Exec=chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage --single-process --headless --disable-software-rasterizer/g' /root/Desktop/chromium.desktop
+    sed -i 's/Exec=chromium-browser/Exec=chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage/g' /root/Desktop/chromium.desktop
 fi
 
-openbox-session &
+# 5. 【核心修复：用 dbus-run-session 包裹拉起窗口管理器 Openbox】
+# 这会强制在 Openbox 内部诞生一个完美的、100% 能被解析的 UNIX Domain Socket 的 DBus 总线环境！
+dbus-run-session -- openbox-session &
 sleep 1
 # 5. 【强行拉起桌面图标绘制引擎】
 # --desktop 参数会接管壁纸和 root/Desktop 目录下的图标渲染
