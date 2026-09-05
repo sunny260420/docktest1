@@ -12,7 +12,8 @@ RUN apk add --no-cache openssl openssh bash gedit mousepad curl tmux nano htop i
     ttf-dejavu \
     autocutsel \
     openbox \
-    py3-xdg
+    py3-xdg \
+    bubblewrap
 
 # 2. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
