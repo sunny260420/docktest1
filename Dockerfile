@@ -4,6 +4,7 @@ FROM alpine:latest
 RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop iproute2 gcompat \
     terminator \
     firefox \
+    chromium \
     xvfb \
     x11vnc \
     python3 \
@@ -21,7 +22,17 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     fcitx5-chinese-addons \
     pcmanfm \
     adwaita-icon-theme \
-    musl-locales
+    musl-locales \
+    dbus
+
+# 2. 【核心修复 1/2】用最高级别的系统 ENV 锁死全通用 UTF-8 环境与输入法路径
+# 这样能从容器诞生的第一秒，强制内核采用 C.UTF-8 编解码，彻底杜绝剪贴板降级变成 ??
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    XDG_RUNTIME_DIR=/run/user/0 \
+    XMODIFIERS=@im=fcitx \
+    GTK_IM_MODULE=fcitx \
+    QT_IM_MODULE=fcitx
 
 # 2. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
@@ -60,7 +71,7 @@ RUN mkdir -p /root/Desktop && \
     cp /usr/share/applications/xfce4-about.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/fcitx5-configtool.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/org.fcitx.Fcitx5.desktop /root/Desktop/ 2>/dev/null || true && \
-    cp /usr/share/applications/org.fcitx.fcitx5-qt6-gui-wrapper.desktop /root/Desktop/ 2>/dev/null || true
+    cp /usr/share/applications/chromium.desktop /root/Desktop/ 2>/dev/null || true
 
 # EXPOSE 8080
 
