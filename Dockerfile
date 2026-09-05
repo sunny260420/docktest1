@@ -46,8 +46,10 @@ RUN mkdir -p /root/Desktop && \
     cp /usr/share/applications/firefox.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/terminator.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/htop.desktop /root/Desktop/ 2>/dev/null || true && \
-    cp /usr/share/applications/x11vnc.desktop /root/Desktop/ 2>/dev/null || true && \
-    cp /usr/share/applications/xfce4-about.desktop /root/Desktop/ 2>/dev/null || true
+    cp /usr/share/applications/xfce4-about.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/fcitx5-configtool.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/org.fcitx.Fcitx5.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/org.fcitx.fcitx5-qt6-gui-wrapper.desktop /root/Desktop/ 2>/dev/null || true
 
 # EXPOSE 8080
 
