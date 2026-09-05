@@ -5,6 +5,7 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     terminator \
     firefox \
     chromium \
+    xterm \
     xvfb \
     x11vnc \
     python3 \
@@ -57,7 +58,10 @@ RUN mkdir -p /var/lib/dbus /etc && \
 # 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
 RUN mkdir -p /root/.config/fcitx5 && \ 
     echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wubi\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
-    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config
+    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config && \
+    mkdir -p /root/.local/share/fcitx5/table && \
+    find /usr/share/fcitx5/table/ -name "*wubi*" -exec ln -sf {} /root/.local/share/fcitx5/table/ \; 2>/dev/null || true
+    
 
 # 6. 【vnc加密】
 # 
