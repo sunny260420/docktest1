@@ -31,6 +31,12 @@ RUN pip3 install --no-cache-dir websockify --break-system-packages
 
 # 4. 复制为默认首页
 RUN cp /opt/novnc/vnc.html /opt/novnc/index.html
+
+# 【核心新增：彻底解决 machine-id 报错】
+# 创建系统和 dbus 预期的机器特征码路径，并随机写入一个 32 位的 uuid 标识符
+RUN mkdir -p /var/lib/dbus /etc && \
+    echo $(head -c 32 /dev/urandom | md5sum | cut -d" " -f1) > /var/lib/dbus/machine-id && \
+    ln -sf /var/lib/dbus/machine-id /etc/machine-id
 #【核心自动化】在系统构建时，把系统自带的应用快捷方式直接复制到桌面上
 # Linux 的应用快捷方式默认都在 /usr/share/applications 里，我们提前创建桌面文件夹并拷过去
 
