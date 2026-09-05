@@ -30,12 +30,14 @@ terminator &
 fcitx5 -d &
 # 8. 启动默认要弹出的主 GUI 应用（加入关闭 Glycin 沙箱的保底设置）
 
-GLYCIN_DISABLE_SANDBOX=1 mousepad &
+export GLYCIN_DISABLE_SANDBOX=1
+mousepad &
+firefox &
 
 sleep 1
 
-# 9. 启动免密的 VNC 桌面服务端
-x11vnc -forever -shared -display :1 -nopw -bg && \
+# 9. 启动需密的 VNC 桌面服务端
+x11vnc -forever -shared -display :1 -rfbauth /root/.vnc/passwd -bg && \
 sleep 1
 
 # 10. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
