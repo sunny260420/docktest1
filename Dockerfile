@@ -14,8 +14,7 @@ RUN apk add --no-cache openssl openssh curl tmux nano htop iproute2 gcompat \
     ssh-keygen -A && \
     sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    echo "root:passw0rd" | chpasswd && \
-    pip install -r requirements.txt
+    echo "root:passw0rd" | chpasswd 
 
 # 2. 安全字符串拼接：直接拼出完整的官方库地址，100% 避免被截断
 RUN PART1="https://github.com" && \
@@ -26,7 +25,7 @@ RUN PART1="https://github.com" && \
 RUN pip3 install --no-cache-dir websockify --break-system-packages
 
 # 4. 暴露 Railway 的网页端口
-EXPOSE 8080 3000 22
+EXPOSE 8080 22
 
 # 5. 启动脚本
 # 仅修改最后这一个 CMD 指令
@@ -36,6 +35,5 @@ CMD Xvfb :1 -screen 0 1280x1024x24 & \
     export DISPLAY=:1 && \
     gedit & \
     x11vnc -forever -shared -display :1 -nopw -listen 127.0.0.1 -xkb & \
-    python3 -m websockify --web /opt/novnc 8080 127.0.0.1:5900 & 
-#    AUTO_ACCESS=true PORT=3000 python3 app.py 
+    python3 -m websockify --web /opt/novnc 8080 127.0.0.1:5900 
 
