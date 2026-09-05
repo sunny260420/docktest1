@@ -10,15 +10,15 @@ openbox-session &
 sleep 1
 
 # 激活剪贴板桥梁
-#autocutsel -s CLIPBOARD -fork
-#autocutsel -s PRIMARY -fork
+autocutsel -s CLIPBOARD -fork && \
+autocutsel -s PRIMARY -fork && \
 terminator &
 sleep 1
 
 # 3. 启动免密的 VNC 桌面服务端
-x11vnc -forever -shared -display :1 -nopw -bg
+x11vnc -forever -shared -display :1 -nopw -bg && \
 sleep 1
 
 # 4. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
-exec python3 -m websockify --web /opt/novnc 0.0.0.0:$PORT 127.0.0.1:5900
+exec python3 -m websockify --web /opt/novnc 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
