@@ -1,17 +1,14 @@
 #!/bin/bash
-# 0. 【核心新增：解决输入法闪退与剪贴板 ?? 乱码】
+# 
 # 1) 创建并显式指定 XDG 运行时目录，给 Fcitx5 搭建好通信总线
 mkdir -p /run/user/0
-
 chmod 700 /run/user/0
 
-
-
-# 1. 启动虚拟显示器 (:1) 并给它一点初始化时间
+# 2. 启动虚拟显示器 (:1) 并给它一点初始化时间
 Xvfb :1 -screen 0 1280x720x24 &
 sleep 2
 
-# 2. 设置图形环境变量，并在虚拟显示器中拉起 gedit
+# . 设置图形环境变量，并在虚拟显示器中拉起 gedit
 export DISPLAY=:1
 
 # 3. 【终极闭环核心：在后台拉起系统级 DBus 守护总线】
@@ -59,4 +56,4 @@ sleep 1
 
 # 8. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
-exec python3 -m websockify --web /opt/novnc  --web-args="show_clip=true" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
+exec python3 -m websockify --web /opt/novnc  0.0.0.0:${PORT:-8080} 127.0.0.1:5900
