@@ -39,7 +39,16 @@ RUN mkdir -p /var/lib/dbus /etc && \
     ln -sf /var/lib/dbus/machine-id /etc/machine-id
 #【核心自动化】在系统构建时，把系统自带的应用快捷方式直接复制到桌面上
 # Linux 的应用快捷方式默认都在 /usr/share/applications 里，我们提前创建桌面文件夹并拷过去
+# 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
+RUN mkdir -p /root/.config/fcitx5 && \
+    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
+    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+Shift_space\n1=Control+Shift_L\n[Hotkey/EnumerateKeys]\n0=Shift_L" > /root/.config/fcitx5/config
 
+# 6. 【vnc加密】
+# 
+RUN mkdir -p /root/.vnc && \
+    x11vnc -storepasswd "Demo2026" /root/.vnc/passwd
+    
 RUN mkdir -p /root/Desktop && \
     cp /usr/share/applications/org.xfce.mousepad.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/org.gnome.gedit.desktop /root/Desktop/ 2>/dev/null || true && \
