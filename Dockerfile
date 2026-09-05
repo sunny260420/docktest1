@@ -17,7 +17,9 @@ RUN apk add --no-cache openssl openssh bash gedit mousepad curl tmux nano htop i
     font-noto-cjk \
     fcitx5 \
     fcitx5-gtk3 \
-    fcitx5-chinese-addons
+    fcitx5-chinese-addons \
+    pcmanfm \
+    adwaita-icon-theme
 
 # 2. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
@@ -29,7 +31,20 @@ RUN pip3 install --no-cache-dir websockify --break-system-packages
 
 # 4. 复制为默认首页
 RUN cp /opt/novnc/vnc.html /opt/novnc/index.html
+#【核心自动化】在系统构建时，把系统自带的应用快捷方式直接复制到桌面上
+# Linux 的应用快捷方式默认都在 /usr/share/applications 里，我们提前创建桌面文件夹并拷过去
+
+RUN mkdir -p /root/Desktop && \
+    cp /usr/share/applications/org.xfce.mousepad.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/org.gnome.gedit.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/firefox.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/terminator.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/htop.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/x11vnc.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/xfce4-about.desktop /root/Desktop/ 2>/dev/null || true
+
 # EXPOSE 8080
+
 # 5. 将启动脚本复制进容器，并赋予绝对的可执行权限
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
