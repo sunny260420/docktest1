@@ -33,4 +33,4 @@ CMD Xvfb :1 -screen 0 1280x1024x24 & \
     gedit & \
     x11vnc -forever -shared -display :1 -nopw -bg && \
     sleep 1 && \
-    python3 -m websockify --web /opt/novnc --heartbeat=30 8080 127.0.0.1:5900
+    python3 -m websockify --web /opt/novnc 0.0.0.0:8080 127.0.0.1:5900
