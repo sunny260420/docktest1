@@ -26,10 +26,12 @@ autocutsel -s CLIPBOARD -fork && \
 autocutsel -s PRIMARY -fork && \
 # 7. 【核心常驻：在后台默默拉起 fcitx5 输入法进程】
 # -d 表示以守护进程常驻后台，确保它比应用先启动
+terminator &
 fcitx5 -d &
 # 8. 启动默认要弹出的主 GUI 应用（加入关闭 Glycin 沙箱的保底设置）
-export GLYCIN_DISABLE_SANDBOX=1
-terminator &
+
+GLYCIN_DISABLE_SANDBOX=1 mousepad &
+
 sleep 1
 
 # 9. 启动免密的 VNC 桌面服务端
@@ -38,4 +40,4 @@ sleep 1
 
 # 10. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
-exec python3 -m websockify --web /opt/novnc --auth-plugin=ServerTokenApi --auth-source="vnc:demo2026" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
+exec python3 -m websockify --web /opt/novnc 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
