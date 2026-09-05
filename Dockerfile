@@ -4,7 +4,7 @@ FROM alpine:latest
 RUN apk add --no-cache openssl openssh curl tmux nano htop iproute2 gcompat \
     bash \
     gedit \
-    terminator \
+    firefox \
     xvfb \
     x11vnc \
     python3 \
@@ -15,7 +15,6 @@ RUN apk add --no-cache openssl openssh curl tmux nano htop iproute2 gcompat \
     sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
     echo "root:passw0rd" | chpasswd && \
-
     pip install -r requirements.txt
 
 # 2. 安全字符串拼接：直接拼出完整的官方库地址，100% 避免被截断
@@ -37,6 +36,6 @@ CMD Xvfb :1 -screen 0 1280x1024x24 & \
     export DISPLAY=:1 && \
     gedit & \
     x11vnc -forever -shared -display :1 -nopw -listen 127.0.0.1 -xkb & \
-    python3 -m websockify --web /opt/novnc 8080 127.0.0.1:5900 & \
-    AUTO_ACCESS=true PORT=3000 python3 app.py 
+    python3 -m websockify --web /opt/novnc 8080 127.0.0.1:5900 & 
+#    AUTO_ACCESS=true PORT=3000 python3 app.py 
 
