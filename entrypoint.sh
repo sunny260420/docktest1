@@ -30,7 +30,7 @@ fi
 # 用 sed 强制让桌面的双击图标带上 --no-sandbox、--disable-gpu 参数启动，确保 100% 成功秒开窗
 # --single-process --disable-software-rasterizer 先不加
 if [ -f /root/Desktop/chromium.desktop ]; then
-    sed -i 's/Exec=chromium-browser/Exec=chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage/g' /root/Desktop/chromium.desktop
+    sed -i 's%Exec=/usr/bin/chromium-browser%Exec=/usr/bin/chromium-browser --disable-gpu --disable-dev-shm-usage%g' /root/Desktop/chromium.desktop
 fi
 
 # 6. 【终极闭环核心：将所有图形和输入法组件整体塞入同一个 dbus 隔离圈】
@@ -42,7 +42,8 @@ dbus-run-session -- bash -c '
     sleep 1
     fcitx5 -d & 
     sleep 1
-    GLYCIN_DISABLE_SANDBOX=1 mousepad &
+    export GLYCIN_DISABLE_SANDBOX=1 
+    mousepad &
     sleep 1
     terminator &
     sleep 1
@@ -58,4 +59,4 @@ sleep 1
 
 # 8. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
-exec python3 -m websockify --web /opt/novnc 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
+exec python3 -m websockify --web /opt/novnc  --web-args="show_clip=true" 0.0.0.0:${PORT:-8080} 127.0.0.1:5900
