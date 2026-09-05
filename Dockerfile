@@ -15,11 +15,13 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     py3-xdg \
     bubblewrap \
     font-noto-cjk \
+    font-wqy-zenhei \
     fcitx5 \
     fcitx5-gtk3 \
     fcitx5-chinese-addons \
     pcmanfm \
-    adwaita-icon-theme
+    adwaita-icon-theme \
+    musl-locales
 
 # 2. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
@@ -42,7 +44,7 @@ RUN mkdir -p /var/lib/dbus /etc && \
 # 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
 RUN mkdir -p /root/.config/fcitx5 && \
     echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
-    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+Shift_space\n1=Control+Shift_L\n[Hotkey/EnumerateKeys]\n0=Shift_L" > /root/.config/fcitx5/config
+    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift_L\n[Hotkey/EnumerateKeys]\n0=Shift_L" > /root/.config/fcitx5/config
 
 # 6. 【vnc加密】
 # 
