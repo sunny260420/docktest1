@@ -42,14 +42,13 @@ dbus-run-session -- bash -c '
     sleep 1
     pcmanfm --desktop & 
     sleep 1
-    fcitx5 -d --replace & 
+    fcitx5 -d & 
     sleep 1
     terminator &
     sleep 1
     export GLYCIN_DISABLE_SANDBOX=1 
     mousepad &
     sleep 1
-
     # 保持会话不退出
     wait
 ' & \
@@ -60,8 +59,10 @@ sleep 2
 export GLYCIN_DISABLE_SANDBOX=1 
 x11vnc -forever -shared -display :1 -rfbauth /root/.vnc/passwd -bg && \
 sleep 1
+
 # /usr/sbin/sshd &&
 # AUTO_ACCESS=true PORT=3000 python3 app.py
+
 # 8. 【最核心的保活】用 exec 让 websockify 成为容器的 1 号主进程 (PID 1)
 # 这样它就会死死钉在前台，绝对不会退出，Railway 的健康检查就能 100% 通过
 exec  python3 -m websockify --web /opt/novnc  0.0.0.0:${PORT:-8080} 127.0.0.1:5900
