@@ -44,12 +44,12 @@ dbus-run-session -- bash -c '
     sleep 1
     fcitx5 -d --replace & 
     sleep 1
-    xfce4-panel &
+    terminator &
     sleep 1
     export GLYCIN_DISABLE_SANDBOX=1 
     mousepad &
     sleep 1
-    terminator &
+    xfce4-panel &
     sleep 1
     # 保持会话不退出
     wait
