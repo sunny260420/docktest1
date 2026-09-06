@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-# 1. 安装基础工具、gedit、xvfb、x11vnc、python3、git 以及字体
+# 1. 安装基础工具、mousepad、xvfb、x11vnc、python3、git 以及字体
 RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop iproute2 gcompat \
     terminator \
     firefox \
@@ -12,21 +12,24 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     py3-pip \
     git \
     ttf-dejavu \
-    autocutsel \
+    xfce4-panel \
     openbox \
     py3-xdg \
     bubblewrap \
     font-noto-cjk \
     font-wqy-zenhei \
-    fcitx5 \
-    fcitx5-gtk3 \
-    fcitx5-table-extra \
-    fcitx5-chinese-addons \
+    fcitx \
+    fcitx-pinyin \
+    fcitx-configtool \
+    fcitx-table-extra \
     pcmanfm \
     adwaita-icon-theme \
     musl-locales \
     dbus \
-    gnu-libiconv
+    gnu-libiconv \
+    btop \
+    bottom \
+    xfce4-terminal
 
 # 2. 【核心修复 1/2】用最高级别的系统 ENV 锁死全通用 UTF-8 环境与输入法路径
 # 这样能从容器诞生的第一秒，强制内核采用 C.UTF-8 编解码，彻底杜绝剪贴板降级变成 ??
@@ -56,12 +59,13 @@ RUN mkdir -p /var/lib/dbus /etc && \
 #【核心自动化】在系统构建时，把系统自带的应用快捷方式直接复制到桌面上
 # Linux 的应用快捷方式默认都在 /usr/share/applications 里，我们提前创建桌面文件夹并拷过去
 # 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
-RUN mkdir -p /root/.config/fcitx5 && \ 
-    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wubi\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
-    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config && \
-    mkdir -p /root/.local/share/fcitx5/table && \
-    find /usr/share/fcitx5/table/ -name "*wubi*" -exec ln -sf {} /root/.local/share/fcitx5/table/ \; 2>/dev/null || true
-    
+#RUN mkdir -p /root/.config/fcitx5 && \ 
+#    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wubi\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
+#    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config && \
+#    mkdir -p /root/.local/share/fcitx5/table && \
+#    find /usr/share/fcitx5/table/ -name "*wubi*" -exec ln -sf {} /root/.local/share/fcitx5/table/ \; 2>/dev/null || true
+RUN mkdir -p /root/.config/fcitx && \
+    echo -e "configversion=2\n[ActiveIME]\nActiveIMECount=3\nActiveIME_0=fcitx-keyboard-us\nActiveIME_1=wubi86\nActiveIME_2=pinyin\n[Hotkey]\nTriggerKey=CTRL_SPACE\nSwitchKey=L_SHIFT" > /root/.config/fcitx/profile
 
 # 6. 【vnc加密】
 # 
@@ -75,11 +79,19 @@ RUN mkdir -p /root/Desktop && \
     cp /usr/share/applications/terminator.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/htop.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/xfce4-about.desktop /root/Desktop/ 2>/dev/null || true && \
-    cp /usr/share/applications/fcitx5-configtool.desktop /root/Desktop/ 2>/dev/null || true && \
-    cp /usr/share/applications/org.fcitx.Fcitx5.desktop /root/Desktop/ 2>/dev/null || true && \
-    cp /usr/share/applications/chromium.desktop /root/Desktop/ 2>/dev/null || true
+    cp /usr/share/applications/chromium.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/btop.desktop /root/Desktop/ 2>/dev/null || true && \
+    cp /usr/share/applications/xfce4-terminal.desktop /root/Desktop/ 2>/dev/null || true
 
-# EXPOSE 8080
+EXPOSE 8080 3000 22
+COPY app.py /root/app.py
+COPY requirements.txt /root/requirements.txt
+RUN ssh-keygen -A && \
+    sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    echo "root:passw0rd" | chpasswd && \ 
+    chmod +x /root/app.py &&\
+    pip install -r /root/requirements.txt
 
 # 5. 将启动脚本复制进容器，并赋予绝对的可执行权限
 COPY entrypoint.sh /entrypoint.sh
