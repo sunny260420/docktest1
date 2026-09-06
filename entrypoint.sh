@@ -41,7 +41,7 @@ dbus-run-session -- bash -c '
     sleep 1
     pcmanfm --desktop & 
     sleep 1
-    fcitx -d & 
+    fcitx5 -d & 
     sleep 1
     xfce4-panel &
     sleep 1
@@ -56,7 +56,7 @@ dbus-run-session -- bash -c '
 sleep 2
 
 
-# 7. 启动需密的 VNC 桌面服务端
+# 7. 启动需密的 VNC 桌面服务端 和 SSHD
 x11vnc -forever -shared -display :1 -rfbauth /root/.vnc/passwd -bg && \
 sleep 1
 /usr/sbin/sshd && \
