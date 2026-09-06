@@ -41,7 +41,9 @@ dbus-run-session -- bash -c '
     sleep 1
     pcmanfm --desktop & 
     sleep 1
-    fcitx5 -d & 
+    fcitx -d & 
+    sleep 1
+    xfce4-panel &
     sleep 1
     export GLYCIN_DISABLE_SANDBOX=1 
     mousepad &
