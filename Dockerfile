@@ -90,8 +90,8 @@ RUN ssh-keygen -A && \
     sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
     echo "root:passw0rd" | chpasswd && \ 
-    chmod +x /root/app.py &&\
-    pip install -r /root/requirements.txt
+    chmod +x /root/app.py
+#    pip install -r /root/requirements.txt
 
 # 10. 将启动脚本复制进容器，并赋予绝对的可执行权限
 COPY entrypoint.sh /entrypoint.sh
