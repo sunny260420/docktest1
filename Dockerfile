@@ -20,10 +20,10 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     font-wqy-zenhei \
     fcitx5 \
     fcitx5-gtk3 \
+    fcitx5-qt \
     fcitx5-configtool \
     fcitx5-chinese-addons \
     fcitx5-table-extra \
-    fcitx5-table-other \
     pcmanfm \
     adwaita-icon-theme \
     musl-locales \
