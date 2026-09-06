@@ -27,7 +27,7 @@ fi
 # 用 sed 强制让桌面的双击图标带上 --no-sandbox、--disable-gpu 参数启动，确保 100% 成功秒开窗
 # --single-process --disable-software-rasterizer 先不加
 if [ -f /root/Desktop/chromium.desktop ]; then
-    sed -i 's%Exec=/usr/bin/chromium-browser%Exec=/usr/bin/chromium-browser  --no-sandbox --disable-gpu --disable-dev-shm-usage%g' /root/Desktop/chromium.desktop
+    sed -i 's%Exec=/usr/bin/chromium-browser%Exec=/usr/bin/chromium-browser  --no-sandbox --disable-gpu --disable-dev-shm-usage --no-fire-run%g' /root/Desktop/chromium.desktop
 fi
 
 # 6. 【终极闭环核心：将所有图形和输入法组件整体塞入同一个 dbus 隔离圈】
