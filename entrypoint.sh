@@ -59,7 +59,7 @@ sleep 2
 
 # 7. 启动需密的 VNC 桌面服务端
 export GLYCIN_DISABLE_SANDBOX=1 
-x11vnc -forever -shared -display :1 -rfbauth /root/.vnc/passwd -bg -ncache 10 && \
+x11vnc -forever -shared -display :1 -rfbauth /root/.vnc/passwd -bg && \
 sleep 1
 # /usr/sbin/sshd &&
 # AUTO_ACCESS=true PORT=3000 python3 app.py
