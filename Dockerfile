@@ -8,6 +8,7 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     xterm \
     xvfb \
     x11vnc \
+    tigervnc \
     python3 \
     py3-pip \
     git \
@@ -63,7 +64,7 @@ RUN mkdir -p /var/lib/dbus /etc && \
 
 # 7. # 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
 RUN mkdir -p /root/.config/fcitx5 && \ 
-    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wubi86\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
+    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\nDefaultIM=wbx\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wbx\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=\n[Groups/0/Items/3]\nName=wbpy\nLayout=" > /root/.config/fcitx5/profile && \
     echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift+space\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config
 
 # 8. 【vnc加密】
