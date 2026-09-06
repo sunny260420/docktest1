@@ -18,10 +18,10 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     bubblewrap \
     font-noto-cjk \
     font-wqy-zenhei \
-    fcitx \
-    fcitx-pinyin \
-    fcitx-configtool \
-    fcitx-table-extra \
+    fcitx5 \
+    fcitx5-gtk3 \
+    fcitx5-chinese-addons \
+    fcitx5-table-extra \
     pcmanfm \
     adwaita-icon-theme \
     musl-locales \
@@ -56,22 +56,21 @@ RUN cp /opt/novnc/vnc.html /opt/novnc/index.html
 RUN mkdir -p /var/lib/dbus /etc && \
     echo $(head -c 32 /dev/urandom | md5sum | cut -d" " -f1) > /var/lib/dbus/machine-id && \
     ln -sf /var/lib/dbus/machine-id /etc/machine-id
-#【核心自动化】在系统构建时，把系统自带的应用快捷方式直接复制到桌面上
-# Linux 的应用快捷方式默认都在 /usr/share/applications 里，我们提前创建桌面文件夹并拷过去
-# 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
-#RUN mkdir -p /root/.config/fcitx5 && \ 
-#    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wubi\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
-#    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config && \
-#    mkdir -p /root/.local/share/fcitx5/table && \
-#    find /usr/share/fcitx5/table/ -name "*wubi*" -exec ln -sf {} /root/.local/share/fcitx5/table/ \; 2>/dev/null || true
-RUN mkdir -p /root/.config/fcitx && \
-    echo -e "configversion=2\n[ActiveIME]\nActiveIMECount=3\nActiveIME_0=fcitx-keyboard-us\nActiveIME_1=wubi86\nActiveIME_2=pinyin\n[Hotkey]\nTriggerKey=CTRL_SPACE\nSwitchKey=L_SHIFT" > /root/.config/fcitx/profile
 
+
+5. 【核心修复 1/2：强行在系统全局共享文件夹中，将五笔与拼音锁死到默认队列】
+# 既然 root 用户目录被隔离，我们直接把配置文件写进全局系统目录 /usr/share/fcitx5 里面！
+RUN mkdir -p /usr/share/fcitx5/config && \
+    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=wubi86\nLayout=\n[Groups/0/Items/1]\nName=keyboard-us\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /usr/share/fcitx5/config/profile && \
+    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift_L\n[Hotkey/EnumerateKeys]\n0=Shift_L" > /usr/share/fcitx5/config/config
 # 6. 【vnc加密】
 # 
 RUN mkdir -p /root/.vnc && \
     x11vnc -storepasswd "Demo2026" /root/.vnc/passwd
     
+#【核心自动化】在系统构建时，把系统自带的应用快捷方式直接复制到桌面上
+# Linux 的应用快捷方式默认都在 /usr/share/applications 里，我们提前创建桌面文件夹并拷过去  
+
 RUN mkdir -p /root/Desktop && \
     cp /usr/share/applications/org.xfce.mousepad.desktop /root/Desktop/ 2>/dev/null || true && \
     cp /usr/share/applications/org.gnome.gedit.desktop /root/Desktop/ 2>/dev/null || true && \
