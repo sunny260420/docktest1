@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM python:3.13-alpine
 
 # 1. 安装基础工具、mousepad、xvfb、x11vnc、python3、git 以及字体
 RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop iproute2 gcompat \
