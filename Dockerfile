@@ -20,8 +20,10 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
     font-wqy-zenhei \
     fcitx5 \
     fcitx5-gtk3 \
+    fcitx5-configtool \
     fcitx5-chinese-addons \
     fcitx5-table-extra \
+    fcitx5-table-other \
     pcmanfm \
     adwaita-icon-theme \
     musl-locales \
@@ -36,9 +38,9 @@ RUN apk add --no-cache openssl openssh bash mousepad curl tmux nano htop btop ip
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     XDG_RUNTIME_DIR=/run/user/0 \
-    XMODIFIERS=@im=fcitx \
-    GTK_IM_MODULE=fcitx \
-    QT_IM_MODULE=fcitx
+    XMODIFIERS=@im=fcitx5 \
+    GTK_IM_MODULE=fcitx5 \
+    QT_IM_MODULE=fcitx5
 
 # 3. 拼接克隆官方完整的 noVNC 源码到 /opt/novnc
 RUN PART1="https://github.com" && \
@@ -59,11 +61,10 @@ RUN mkdir -p /var/lib/dbus /etc && \
     ln -sf /var/lib/dbus/machine-id /etc/machine-id
 
 
-# 7. 【核心修复 1/2：强行在系统全局共享文件夹中，将五笔与拼音锁死到默认队列】
-# 既然 root 用户目录被隔离，我们直接把配置文件写进全局系统目录 /usr/share/fcitx5 里面！
-RUN mkdir -p /usr/share/fcitx5/config && \
-    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=wubi86\nLayout=\n[Groups/0/Items/1]\nName=keyboard-us\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /usr/share/fcitx5/config/profile && \
-    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift_L\n[Hotkey/EnumerateKeys]\n0=Shift_L" > /usr/share/fcitx5/config/config
+# 7. # 5. 在容器底层预设好 Fcitx5 智能拼音和热键配置 (解决输入法无法切出问题)
+RUN mkdir -p /root/.config/fcitx5 && \ 
+    echo -e "[Groups/0]\nName=Default\nDefault Layout=us\n[Groups/0/Items/0]\nName=keyboard-us\nLayout=\n[Groups/0/Items/1]\nName=wubi86\nLayout=\n[Groups/0/Items/2]\nName=pinyin\nLayout=" > /root/.config/fcitx5/profile && \
+    echo -e "[Hotkey]\nTriggerKeys=\n[Hotkey/TriggerKeys]\n0=Control+space\n1=Control+Shift+space\n[Hotkey/EnumerateKeys]\n0=Control+Shift_L" > /root/.config/fcitx5/config
 
 # 8. 【vnc加密】
 # 
