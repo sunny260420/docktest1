@@ -33,7 +33,6 @@ fi
 # 6. 【终极闭环核心：将所有图形和输入法组件整体塞入同一个 dbus 隔离圈】
 # 这会强制让 fcitx5、pcmanfm（负责双击图标）、mousepad 和 Openbox 在启动的第一秒完全共享同一个由 UNIX 套接字生成的、合规的 DBus 会话环境！
 dbus-run-session -- bash -c '
-    export XDG_CONFIG_HOME="/usr/share"
     export XMODIFIERS="@im=fcitx"
     export GTK_IM_MODULE="fcitx"
     export QT_IM_MODULE="fcitx"
@@ -54,7 +53,7 @@ dbus-run-session -- bash -c '
 ' & \
 sleep 2
 
-
+# xfce4-panel &
 # 7. 启动需密的 VNC 桌面服务端
 export GLYCIN_DISABLE_SANDBOX=1 
 x11vnc -forever -shared -display :1 -rfbauth /root/.vnc/passwd -bg && \
