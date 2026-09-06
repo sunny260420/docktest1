@@ -93,7 +93,7 @@ RUN ssh-keygen -A && \
     echo "root:passw0rd" | chpasswd && \ 
     chmod +x /root/app.py
 #    pip install -r /root/requirements.txt
-RUN pip3 install --no-cache-dir  install -r /root/requirements.txt
+RUN pip3 install --no-cache-dir  install -r /root/requirements.txt  --break-system-packages
 # 10. 将启动脚本复制进容器，并赋予绝对的可执行权限
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
